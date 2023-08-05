@@ -1,8 +1,12 @@
-package com.sn.mediastorepv
+package com.sn.mediastorepv.repository
 
 import android.content.ContentUris
 import android.content.Context
 import android.provider.MediaStore
+import com.sn.mediastorepv.data.Media
+import com.sn.mediastorepv.data.MediaSelectionData
+import com.sn.mediastorepv.data.MediaType
+import com.sn.mediastorepv.extension.getFileExtension
 
 class MediaStoreRepository(
     private val context: Context,
@@ -33,10 +37,10 @@ class MediaStoreRepository(
                 val id = cursor.getLong(idColumn)
                 val name = cursor.getString(nameColumn)
                 val dateAdded = cursor.getLong(dateAddedColumn)
-                val mimeType = cursor.getString(mimeTypeColumn).substringAfterLast("/")
+                val mimeType = cursor.getString(mimeTypeColumn)
                 val size = cursor.getLong(sizeColumn)
                 val uri = ContentUris.withAppendedId(mediaType.uri, id)
-                val ext = name
+                val ext = name.getFileExtension()
 
                 val media = Media(id, name, dateAdded, mimeType, size, mediaType, uri, ext)
                 mediaList.add(media)

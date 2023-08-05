@@ -1,4 +1,4 @@
-package com.sn.mediastorepv
+package com.sn.mediastorepv.data
 
 data class MediaSelectionData(
     val selection: String,
