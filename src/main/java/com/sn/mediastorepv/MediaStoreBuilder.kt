@@ -14,7 +14,7 @@ class MediaStoreBuilder(private val context: Context) {
         return this
     }
 
-    fun setExtCheck(extQuery: List<String>?): MediaStoreBuilder {
+    fun setExtCheck(extCheck: List<String>?): MediaStoreBuilder {
         this.extCheck = extCheck
         return this
     }
