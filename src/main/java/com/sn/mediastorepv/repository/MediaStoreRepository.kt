@@ -2,7 +2,6 @@ package com.sn.mediastorepv.repository
 
 import android.content.ContentUris
 import android.content.Context
-import android.provider.MediaStore
 import com.sn.mediastorepv.data.Media
 import com.sn.mediastorepv.data.MediaSelectionData
 import com.sn.mediastorepv.data.MediaType
@@ -10,13 +9,14 @@ import com.sn.mediastorepv.extension.getFileExtension
 
 class MediaStoreRepository(
     private val context: Context,
-    private val mediaSelectionData: MediaSelectionData?
+    private val mediaSelectionData: MediaSelectionData,
+    private val extCheck: List<String>?
 ) {
 
     fun getMedia(mediaType: MediaType): MutableList<Media> {
-        val selection = mediaSelectionData?.selection
-        val selectionArgs = mediaSelectionData?.selectionArgs?.toTypedArray()
-        val sortOrder = "${MediaStore.MediaColumns.DATE_ADDED} DESC"
+        val selection = mediaSelectionData.selection
+        val selectionArgs = mediaSelectionData.selectionArgs?.toTypedArray()
+        val sortOrder = mediaSelectionData.sortOrder
 
         val mediaList = mutableListOf<Media>()
 
@@ -42,8 +42,10 @@ class MediaStoreRepository(
                 val uri = ContentUris.withAppendedId(mediaType.uri, id)
                 val ext = name.getFileExtension()
 
-                val media = Media(id, name, dateAdded, mimeType, size, mediaType, uri, ext)
-                mediaList.add(media)
+                if (extCheck == null || extCheck.contains(ext)) {
+                    val media = Media(id, name, dateAdded, mimeType, size, mediaType, uri, ext)
+                    mediaList.add(media)
+                }
             }
         }
         return mediaList

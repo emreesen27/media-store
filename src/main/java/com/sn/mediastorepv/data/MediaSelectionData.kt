@@ -1,20 +1,9 @@
 package com.sn.mediastorepv.data
 
-data class MediaSelectionData(
-    val selection: String,
-    val selectionArgs: List<String>
-) {
-    constructor(
-        columnName: String,
-        comparison: String,
-        value: String
-    ) : this("$columnName $comparison ?", listOf(value))
-}
+import android.provider.MediaStore
 
-/*
-constructor(columnName: String, comparison: String, value: String) : this(
-        String.format("%s %s ?", columnName, comparison),
-        listOf(value)
-    )
-*
- */
+data class MediaSelectionData(
+    val selection: String? = null,
+    val selectionArgs: List<String>? = null,
+    val sortOrder: String? = "${MediaStore.MediaColumns.DATE_ADDED} DESC"
+)
