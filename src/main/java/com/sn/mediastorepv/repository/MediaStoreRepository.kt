@@ -2,10 +2,12 @@ package com.sn.mediastorepv.repository
 
 import android.content.ContentUris
 import android.content.Context
+import android.net.Uri
 import com.sn.mediastorepv.data.Media
 import com.sn.mediastorepv.data.MediaSelectionData
 import com.sn.mediastorepv.data.MediaType
 import com.sn.mediastorepv.extension.getFileExtension
+import java.io.File
 
 class MediaStoreRepository(
     private val context: Context,
@@ -61,4 +63,31 @@ class MediaStoreRepository(
         }
         return deletedCount == medias.size
     }
+
+    fun moveMedia(mediaList: List<Media>, destinationPath: String): Boolean {
+        var movedCount = 0
+        for (media in mediaList) {
+            if (media.uri == null)
+                return false
+
+            val inputStream = context.contentResolver.openInputStream(media.uri)
+            val destinationFile = File(destinationPath, media.name)
+            val destinationUri = Uri.fromFile(destinationFile)
+
+            val outputStream = context.contentResolver.openOutputStream(destinationUri)
+            inputStream?.use { input ->
+                outputStream?.use { output ->
+                    input.copyTo(output)
+                }
+            }
+
+            val deleteResult = context.contentResolver.delete(media.uri, null, null)
+            if (deleteResult != 0) {
+                movedCount++
+            }
+
+        }
+        return movedCount == mediaList.size
+    }
+
 }
