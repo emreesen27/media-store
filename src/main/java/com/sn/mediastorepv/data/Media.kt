@@ -4,11 +4,13 @@ import android.net.Uri
 
 data class Media(
     var id: Long,
-    val name: String,
+    var name: String,
     val dateAdded: Long,
     val mimeType: String,
     val size: Long,
     val mediaType: MediaType,
     val uri: Uri?,
-    val ext: String?
+    val ext: String?,
+    val conflict: ConflictStrategy = ConflictStrategy.OVERWRITE,
+    val data: String
 )

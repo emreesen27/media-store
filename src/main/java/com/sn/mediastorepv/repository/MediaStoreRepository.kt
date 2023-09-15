@@ -3,10 +3,13 @@ package com.sn.mediastorepv.repository
 import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
+import android.util.Log
+import com.sn.mediastorepv.data.ConflictStrategy
 import com.sn.mediastorepv.data.Media
 import com.sn.mediastorepv.data.MediaSelectionData
 import com.sn.mediastorepv.data.MediaType
 import com.sn.mediastorepv.extension.getFileExtension
+import com.sn.mediastorepv.util.MediaScanner
 import java.io.File
 
 class MediaStoreRepository(
@@ -34,6 +37,7 @@ class MediaStoreRepository(
             val dateAddedColumn = cursor.getColumnIndexOrThrow(mediaType.projection[2])
             val mimeTypeColumn = cursor.getColumnIndexOrThrow(mediaType.projection[3])
             val sizeColumn = cursor.getColumnIndexOrThrow(mediaType.projection[4])
+            val dataColumn = cursor.getColumnIndexOrThrow(mediaType.projection[5])
 
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(idColumn)
@@ -43,9 +47,14 @@ class MediaStoreRepository(
                 val size = cursor.getLong(sizeColumn)
                 val uri = ContentUris.withAppendedId(mediaType.uri, id)
                 val ext = name.getFileExtension()
+                val data = cursor.getString(dataColumn)
 
                 if (extCheck == null || extCheck.contains(ext)) {
-                    val media = Media(id, name, dateAdded, mimeType, size, mediaType, uri, ext)
+                    val media = Media(
+                        id = id, name = name, dateAdded = dateAdded,
+                        mimeType = mimeType, size = size, mediaType = mediaType,
+                        uri = uri, ext = ext, data = data
+                    )
                     mediaList.add(media)
                 }
             }
@@ -65,29 +74,50 @@ class MediaStoreRepository(
     }
 
     fun moveMedia(mediaList: List<Media>, destinationPath: String): Boolean {
-        var movedCount = 0
-        for (media in mediaList) {
-            if (media.uri == null)
-                return false
+        val mediaData: MutableList<Pair<String, String>> = mutableListOf()
+        try {
+            for (media in mediaList) {
+                if (media.uri == null)
+                    return false
 
-            val inputStream = context.contentResolver.openInputStream(media.uri)
-            val destinationFile = File(destinationPath, media.name)
-            val destinationUri = Uri.fromFile(destinationFile)
+                var destinationFile = File(destinationPath, media.name)
 
-            val outputStream = context.contentResolver.openOutputStream(destinationUri)
-            inputStream?.use { input ->
-                outputStream?.use { output ->
-                    input.copyTo(output)
+                if (destinationFile.exists()) {
+                    if (media.conflict == ConflictStrategy.SKIP) {
+                        continue
+                    } else if (media.conflict == ConflictStrategy.KEEP_BOTH) {
+                        var copyNumber = 1
+                        val baseFileName = media.name
+                        while (File(destinationPath, "${copyNumber}${baseFileName}").exists()) {
+                            copyNumber++
+                        }
+                        media.name = "${copyNumber}${baseFileName}"
+                        destinationFile = File(destinationPath, media.name)
+                    }
                 }
-            }
 
-            val deleteResult = context.contentResolver.delete(media.uri, null, null)
-            if (deleteResult != 0) {
-                movedCount++
-            }
+                val inputStream = context.contentResolver.openInputStream(media.uri)
+                val destinationUri = Uri.fromFile(destinationFile)
+                val outputStream = context.contentResolver.openOutputStream(destinationUri)
 
+                inputStream?.use { input ->
+                    outputStream?.use { output -> input.copyTo(output) }
+                }
+
+                val deleteResult = context.contentResolver.delete(media.uri, null, null)
+                if (deleteResult != 0) {
+                    mediaData.add(Pair(destinationFile.absolutePath, media.mimeType))
+                }
+
+                if (mediaData.size == mediaList.size)
+                    MediaScanner.scanMediaFiles(context, mediaData)
+
+            }
+        } catch (e: Exception) {
+            Log.e("error", e.message.toString())
         }
-        return movedCount == mediaList.size
+
+        return mediaData.size == mediaList.size
     }
 
 }

@@ -13,7 +13,8 @@ enum class MediaType(val uri: Uri, val projection: Array<String>) {
             MediaStore.Images.Media.DISPLAY_NAME,
             MediaStore.Images.Media.DATE_ADDED,
             MediaStore.Images.Media.MIME_TYPE,
-            MediaStore.Images.Media.SIZE
+            MediaStore.Images.Media.SIZE,
+            MediaStore.Images.Media.DATA
         )
     ),
     VIDEOS(
@@ -23,7 +24,8 @@ enum class MediaType(val uri: Uri, val projection: Array<String>) {
             MediaStore.Video.Media.DISPLAY_NAME,
             MediaStore.Video.Media.DATE_ADDED,
             MediaStore.Video.Media.MIME_TYPE,
-            MediaStore.Video.Media.SIZE
+            MediaStore.Video.Media.SIZE,
+            MediaStore.Video.Media.DATA
         )
     ),
     AUDIOS(
@@ -33,7 +35,8 @@ enum class MediaType(val uri: Uri, val projection: Array<String>) {
             MediaStore.Audio.Media.DISPLAY_NAME,
             MediaStore.Audio.Media.DATE_ADDED,
             MediaStore.Audio.Media.MIME_TYPE,
-            MediaStore.Audio.Media.SIZE
+            MediaStore.Audio.Media.SIZE,
+            MediaStore.Audio.Media.DATA
         )
     ),
 
@@ -45,7 +48,8 @@ enum class MediaType(val uri: Uri, val projection: Array<String>) {
             MediaStore.Downloads.DISPLAY_NAME,
             MediaStore.Downloads.DATE_ADDED,
             MediaStore.Downloads.MIME_TYPE,
-            MediaStore.Downloads.SIZE
+            MediaStore.Downloads.SIZE,
+            MediaStore.Downloads.DATA
         )
     ),
     FILES(
@@ -55,7 +59,8 @@ enum class MediaType(val uri: Uri, val projection: Array<String>) {
             MediaStore.Files.FileColumns.DISPLAY_NAME,
             MediaStore.Files.FileColumns.DATE_ADDED,
             MediaStore.Files.FileColumns.MIME_TYPE,
-            MediaStore.Files.FileColumns.SIZE
+            MediaStore.Files.FileColumns.SIZE,
+            MediaStore.Files.FileColumns.DATA
         )
     );
 }
