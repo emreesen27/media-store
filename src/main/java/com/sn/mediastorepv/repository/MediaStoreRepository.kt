@@ -104,20 +104,15 @@ class MediaStoreRepository(
                     outputStream?.use { output -> input.copyTo(output) }
                 }
 
-                val deleteResult = context.contentResolver.delete(media.uri, null, null)
-                if (deleteResult != 0) {
-                    mediaData.add(Pair(destinationFile.absolutePath, media.mimeType))
-                }
-
-                if (mediaData.size == mediaList.size)
-                    MediaScanner.scanMediaFiles(context, mediaData)
+                mediaData.add(Pair(destinationFile.absolutePath, media.mimeType))
+                context.contentResolver.delete(media.uri, null, null)
 
             }
         } catch (e: Exception) {
-            Log.e("error", e.message.toString())
+            return false
         }
-
-        return mediaData.size == mediaList.size
+        MediaScanner.scanMediaFiles(context, mediaData)
+        return true
     }
 
 }
