@@ -3,13 +3,11 @@ package com.sn.mediastorepv.repository
 import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import com.sn.mediastorepv.data.ConflictStrategy
 import com.sn.mediastorepv.data.Media
 import com.sn.mediastorepv.data.MediaSelectionData
 import com.sn.mediastorepv.data.MediaType
 import com.sn.mediastorepv.extension.getFileExtension
-import com.sn.mediastorepv.util.MediaScanner
 import java.io.File
 
 class MediaStoreRepository(
@@ -73,12 +71,15 @@ class MediaStoreRepository(
         return deletedCount == medias.size
     }
 
-    fun moveMedia(mediaList: List<Media>, destinationPath: String): Boolean {
+    fun moveMedia(
+        mediaList: List<Media>,
+        destinationPath: String
+    ): MutableList<Pair<String, String>>? {
         val mediaData: MutableList<Pair<String, String>> = mutableListOf()
         try {
             for (media in mediaList) {
                 if (media.uri == null)
-                    return false
+                    return null
 
                 var destinationFile = File(destinationPath, media.name)
 
@@ -109,10 +110,9 @@ class MediaStoreRepository(
 
             }
         } catch (e: Exception) {
-            return false
+            return null
         }
-        MediaScanner.scanMediaFiles(context, mediaData)
-        return true
+        return mediaData
     }
 
 }
