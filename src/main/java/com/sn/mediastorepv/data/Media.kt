@@ -11,6 +11,5 @@ data class Media(
     val mediaType: MediaType,
     val uri: Uri?,
     val ext: String?,
-    val conflict: ConflictStrategy = ConflictStrategy.OVERWRITE,
     val data: String
 )

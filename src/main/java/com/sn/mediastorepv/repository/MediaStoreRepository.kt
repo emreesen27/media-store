@@ -7,7 +7,9 @@ import com.sn.mediastorepv.data.ConflictStrategy
 import com.sn.mediastorepv.data.Media
 import com.sn.mediastorepv.data.MediaSelectionData
 import com.sn.mediastorepv.data.MediaType
+import com.sn.mediastorepv.extension.generateUniqueFileName
 import com.sn.mediastorepv.extension.getFileExtension
+import com.sn.mediastorepv.util.MediaOperationCallback
 import java.io.File
 
 class MediaStoreRepository(
@@ -15,6 +17,8 @@ class MediaStoreRepository(
     private val mediaSelectionData: MediaSelectionData,
     private val extCheck: List<String>?
 ) {
+
+    private var strategy: Pair<ConflictStrategy, Boolean> = Pair(ConflictStrategy.OVERWRITE, false)
 
     fun getMedia(mediaType: MediaType): MutableList<Media> {
         val selection = mediaSelectionData.selection
@@ -71,42 +75,54 @@ class MediaStoreRepository(
         return deletedCount == medias.size
     }
 
-    fun moveMedia(
+    suspend fun moveMedia(
         mediaList: List<Media>,
-        destinationPath: String
+        destinationPath: String,
+        callback: MediaOperationCallback,
+        isCopy: Boolean
     ): MutableList<Pair<String, String>>? {
         val mediaData: MutableList<Pair<String, String>> = mutableListOf()
         try {
-            for (media in mediaList) {
+            val totalSize: Long = mediaList.sumOf { it.size }
+            var movedSize: Long = 0
+
+            for ((index, media) in mediaList.withIndex()) {
                 if (media.uri == null)
                     return null
 
                 var destinationFile = File(destinationPath, media.name)
 
                 if (destinationFile.exists()) {
-                    if (media.conflict == ConflictStrategy.SKIP) {
+                    if (!strategy.second) {
+                        strategy = callback.fileConflict(destinationFile)
+                    }
+
+                    if (strategy.first == ConflictStrategy.SKIP) {
                         continue
-                    } else if (media.conflict == ConflictStrategy.KEEP_BOTH) {
-                        var copyNumber = 1
-                        val baseFileName = media.name
-                        while (File(destinationPath, "${copyNumber}${baseFileName}").exists()) {
-                            copyNumber++
-                        }
-                        media.name = "${copyNumber}${baseFileName}"
-                        destinationFile = File(destinationPath, media.name)
+                    } else if (strategy.first == ConflictStrategy.KEEP_BOTH) {
+                        destinationFile = media.generateUniqueFileName(destinationPath)
                     }
                 }
+
+                // callback.onProgress((index + 1) * 100 / mediaList.size)
 
                 val inputStream = context.contentResolver.openInputStream(media.uri)
                 val destinationUri = Uri.fromFile(destinationFile)
                 val outputStream = context.contentResolver.openOutputStream(destinationUri)
 
                 inputStream?.use { input ->
-                    outputStream?.use { output -> input.copyTo(output) }
+                    outputStream?.use { output ->
+                        input.copyTo(output)
+                        movedSize += media.size
+                        val progress = ((movedSize * 100) / totalSize).toInt()
+                        callback.onProgress(progress)
+                    }
                 }
 
                 mediaData.add(Pair(destinationFile.absolutePath, media.mimeType))
-                context.contentResolver.delete(media.uri, null, null)
+                if (!isCopy) {
+                    context.contentResolver.delete(media.uri, null, null)
+                }
 
             }
         } catch (e: Exception) {
