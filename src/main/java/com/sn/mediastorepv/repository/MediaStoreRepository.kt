@@ -41,6 +41,8 @@ class MediaStoreRepository(
             val mimeTypeColumn = cursor.getColumnIndexOrThrow(mediaType.projection[3])
             val sizeColumn = cursor.getColumnIndexOrThrow(mediaType.projection[4])
             val dataColumn = cursor.getColumnIndexOrThrow(mediaType.projection[5])
+            val dateModifiedColumn = cursor.getColumnIndexOrThrow(mediaType.projection[6])
+            val directoryPathColumn = cursor.getColumnIndexOrThrow(mediaType.projection[7])
 
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(idColumn)
@@ -51,12 +53,22 @@ class MediaStoreRepository(
                 val uri = ContentUris.withAppendedId(mediaType.uri, id)
                 val ext = name.getFileExtension()
                 val data = cursor.getString(dataColumn)
+                val dateModified = cursor.getLong(dateModifiedColumn)
+                val directoryPath = cursor.getString(directoryPathColumn)
 
                 if (extCheck == null || extCheck.contains(ext)) {
                     val media = Media(
-                        id = id, name = name, dateAdded = dateAdded,
-                        mimeType = mimeType, size = size, mediaType = mediaType,
-                        uri = uri, ext = ext, data = data
+                        id = id,
+                        name = name,
+                        dateAdded = dateAdded,
+                        mimeType = mimeType,
+                        size = size,
+                        mediaType = mediaType,
+                        uri = uri,
+                        ext = ext,
+                        data = data,
+                        dateModified = dateModified,
+                        directoryPath = directoryPath
                     )
                     mediaList.add(media)
                 }

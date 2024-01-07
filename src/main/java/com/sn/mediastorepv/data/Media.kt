@@ -11,5 +11,7 @@ data class Media(
     val mediaType: MediaType,
     val uri: Uri?,
     val ext: String?,
-    val data: String
+    val data: String,
+    val dateModified: Long,
+    val directoryPath: String
 )
