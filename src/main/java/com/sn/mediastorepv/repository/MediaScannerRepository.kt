@@ -6,7 +6,7 @@ import com.sn.mediastorepv.util.MediaScanCallback
 
 class MediaScannerRepository(
     private val context: Context,
-    private val mediaList: List<Pair<String, String>>,
+    private val mediaList: List<Pair<String, String?>>,
     private val mediaScanCallback: MediaScanCallback
 ) {
 

@@ -16,7 +16,6 @@ enum class MediaType(val uri: Uri, val projection: Array<String>) {
             MediaStore.Images.Media.SIZE,
             MediaStore.Images.Media.DATA,
             MediaStore.Images.Media.DATE_MODIFIED,
-            MediaStore.Images.Media.BUCKET_DISPLAY_NAME
         )
     ),
     VIDEOS(
@@ -29,7 +28,6 @@ enum class MediaType(val uri: Uri, val projection: Array<String>) {
             MediaStore.Video.Media.SIZE,
             MediaStore.Video.Media.DATA,
             MediaStore.Video.Media.DATE_MODIFIED,
-            MediaStore.Video.Media.BUCKET_DISPLAY_NAME
         )
     ),
     AUDIOS(
@@ -42,7 +40,6 @@ enum class MediaType(val uri: Uri, val projection: Array<String>) {
             MediaStore.Audio.Media.SIZE,
             MediaStore.Audio.Media.DATA,
             MediaStore.Audio.Media.DATE_MODIFIED,
-            MediaStore.Audio.Media.BUCKET_DISPLAY_NAME
         )
     ),
 
@@ -57,7 +54,6 @@ enum class MediaType(val uri: Uri, val projection: Array<String>) {
             MediaStore.Downloads.SIZE,
             MediaStore.Downloads.DATA,
             MediaStore.Downloads.DATE_MODIFIED,
-            MediaStore.Downloads.BUCKET_DISPLAY_NAME
         )
     ),
     FILES(
@@ -70,7 +66,6 @@ enum class MediaType(val uri: Uri, val projection: Array<String>) {
             MediaStore.Files.FileColumns.SIZE,
             MediaStore.Files.FileColumns.DATA,
             MediaStore.Files.FileColumns.DATE_MODIFIED,
-            MediaStore.Files.FileColumns.BUCKET_DISPLAY_NAME
         )
     );
 }

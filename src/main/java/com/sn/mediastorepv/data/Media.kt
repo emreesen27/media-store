@@ -13,5 +13,4 @@ data class Media(
     val ext: String?,
     val data: String,
     val dateModified: Long,
-    val directoryPath: String
 )

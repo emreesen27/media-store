@@ -9,7 +9,7 @@ import com.sn.mediastorepv.data.MediaSelectionData
 import com.sn.mediastorepv.data.MediaType
 import com.sn.mediastorepv.extension.copyToWithProgress
 import com.sn.mediastorepv.extension.generateUniqueFileName
-import com.sn.mediastorepv.extension.getFileExtension
+import com.sn.mediastorepv.extension.getExtension
 import com.sn.mediastorepv.util.MediaOperationCallback
 import java.io.File
 
@@ -42,7 +42,6 @@ class MediaStoreRepository(
             val sizeColumn = cursor.getColumnIndexOrThrow(mediaType.projection[4])
             val dataColumn = cursor.getColumnIndexOrThrow(mediaType.projection[5])
             val dateModifiedColumn = cursor.getColumnIndexOrThrow(mediaType.projection[6])
-            val directoryPathColumn = cursor.getColumnIndexOrThrow(mediaType.projection[7])
 
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(idColumn)
@@ -51,10 +50,9 @@ class MediaStoreRepository(
                 val mimeType = cursor.getString(mimeTypeColumn)
                 val size = cursor.getLong(sizeColumn)
                 val uri = ContentUris.withAppendedId(mediaType.uri, id)
-                val ext = name.getFileExtension()
+                val ext = name.getExtension()
                 val data = cursor.getString(dataColumn)
                 val dateModified = cursor.getLong(dateModifiedColumn)
-                val directoryPath = cursor.getString(directoryPathColumn)
 
                 if (extCheck == null || extCheck.contains(ext)) {
                     val media = Media(
@@ -68,7 +66,6 @@ class MediaStoreRepository(
                         ext = ext,
                         data = data,
                         dateModified = dateModified,
-                        directoryPath = directoryPath
                     )
                     mediaList.add(media)
                 }

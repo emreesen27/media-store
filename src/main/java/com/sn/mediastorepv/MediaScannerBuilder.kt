@@ -8,14 +8,14 @@ class MediaScannerBuilder {
 
     private var context: Context? = null
     private var mediaScanCallback: MediaScanCallback? = null
-    private var mediaList: List<Pair<String, String>>? = null
+    private var mediaList: List<Pair<String, String?>>? = null
 
     fun addContext(context: Context): MediaScannerBuilder {
         this.context = context
         return this
     }
 
-    fun addMediaList(mediaList: List<Pair<String, String>>): MediaScannerBuilder {
+    fun addMediaList(mediaList: List<Pair<String, String?>>): MediaScannerBuilder {
         this.mediaList = mediaList
         return this
     }
