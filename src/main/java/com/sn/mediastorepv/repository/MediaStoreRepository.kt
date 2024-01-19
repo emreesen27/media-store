@@ -7,7 +7,6 @@ import com.sn.mediastorepv.data.ConflictStrategy
 import com.sn.mediastorepv.data.Media
 import com.sn.mediastorepv.data.MediaSelectionData
 import com.sn.mediastorepv.data.MediaType
-import com.sn.mediastorepv.extension.copyToWithProgress
 import com.sn.mediastorepv.extension.generateUniqueFileName
 import com.sn.mediastorepv.extension.getExtension
 import com.sn.mediastorepv.util.MediaOperationCallback
@@ -93,7 +92,8 @@ class MediaStoreRepository(
     ): MutableList<Pair<String, String>>? {
         val mediaData: MutableList<Pair<String, String>> = mutableListOf()
         try {
-            val totalSize: Long = mediaList.sumOf { it.size }
+            val totalItemCount: Int = mediaList.size
+            var movedItemCount = 0
 
             for (media in mediaList) {
                 if (media.uri == null)
@@ -119,12 +119,12 @@ class MediaStoreRepository(
 
                 inputStream?.use { input ->
                     outputStream?.use { output ->
-                        input.copyToWithProgress(output, totalSize) { progress ->
-                            callback.onProgress(progress)
-                        }
+                        input.copyTo(output)
                     }
                 }
-
+                movedItemCount++
+                val progress = ((movedItemCount.toDouble() / totalItemCount.toDouble()) * 100).toInt()
+                callback.onProgress(progress)
                 mediaData.add(Pair(destinationFile.absolutePath, media.mimeType))
                 if (!isCopy) {
                     context.contentResolver.delete(media.uri, null, null)
