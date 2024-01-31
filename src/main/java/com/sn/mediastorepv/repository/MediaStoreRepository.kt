@@ -2,6 +2,7 @@ package com.sn.mediastorepv.repository
 
 import android.content.ContentUris
 import android.content.Context
+import android.provider.MediaStore
 import com.sn.mediastorepv.data.ConflictStrategy
 import com.sn.mediastorepv.data.Media
 import com.sn.mediastorepv.data.MediaSelectionData
@@ -70,4 +71,34 @@ class MediaStoreRepository(
         }
         return mediaList
     }
+
+    fun searchInPath(
+        fileName: String,
+        rootPath: String,
+        vararg mediaTypes: MediaType
+    ): MutableList<String> {
+        val pathList = mutableListOf<String>()
+        for (mediaType in mediaTypes) {
+            val selection =
+                "${mediaType.projection[1]} LIKE ? AND ${MediaStore.MediaColumns.DATA} LIKE ?"
+            val selectionArgs = arrayOf("%$fileName%", "%$rootPath%")
+
+            context.contentResolver.query(
+                mediaType.uri,
+                mediaType.projection,
+                selection,
+                selectionArgs,
+                null
+            )?.use { cursor ->
+                while (cursor.moveToNext()) {
+                    val path =
+                        cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA))
+                    pathList.add(path)
+                }
+            }
+        }
+
+        return pathList
+    }
+
 }
