@@ -81,7 +81,7 @@ class MediaStoreRepository(
         for (mediaType in mediaTypes) {
             val selection =
                 "${mediaType.projection[1]} LIKE ? AND ${MediaStore.MediaColumns.DATA} LIKE ?"
-            val selectionArgs = arrayOf("%$fileName%", "%$rootPath%")
+            val selectionArgs = arrayOf("%$fileName%", "$rootPath%/%")
 
             context.contentResolver.query(
                 mediaType.uri,
@@ -93,12 +93,14 @@ class MediaStoreRepository(
                 while (cursor.moveToNext()) {
                     val path =
                         cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA))
-                    pathList.add(path)
+                    if (path.startsWith(rootPath)) {
+                        pathList.add(path)
+                    }
                 }
             }
         }
-
         return pathList
     }
+
 
 }
