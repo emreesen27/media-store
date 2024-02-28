@@ -1,6 +1,7 @@
 package com.sn.mediastorepv.repository
 
 import android.content.ContentUris
+import android.content.ContentValues
 import android.content.Context
 import android.provider.MediaStore
 import com.sn.mediastorepv.data.ConflictStrategy
@@ -102,5 +103,17 @@ class MediaStoreRepository(
         return pathList
     }
 
+    fun renameMedia(media: Media, newName: String): Media? {
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, newName)
+        }
+        val rowsUpdated = context.contentResolver.update(media.uri, contentValues, null, null)
+        return if (rowsUpdated > 0) {
+            media.copy(
+                name = newName,
+                data = media.data.replace(media.name, newName)
+            )
+        } else null
+    }
 
 }
