@@ -43,19 +43,6 @@ enum class MediaType(val uri: Uri, val projection: Array<String>) {
         )
     ),
 
-    @RequiresApi(Build.VERSION_CODES.Q)
-    DOWNLOADS(
-        MediaStore.Downloads.EXTERNAL_CONTENT_URI,
-        arrayOf(
-            MediaStore.Downloads._ID,
-            MediaStore.Downloads.DISPLAY_NAME,
-            MediaStore.Downloads.DATE_ADDED,
-            MediaStore.Downloads.MIME_TYPE,
-            MediaStore.Downloads.SIZE,
-            MediaStore.Downloads.DATA,
-            MediaStore.Downloads.DATE_MODIFIED,
-        )
-    ),
     FILES(
         MediaStore.Files.getContentUri("external"),
         arrayOf(
