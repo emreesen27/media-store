@@ -42,7 +42,6 @@ enum class MediaType(val uri: Uri, val projection: Array<String>) {
             MediaStore.Audio.Media.DATE_MODIFIED,
         )
     ),
-
     FILES(
         MediaStore.Files.getContentUri("external"),
         arrayOf(
