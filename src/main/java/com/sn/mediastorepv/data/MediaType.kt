@@ -1,9 +1,7 @@
 package com.sn.mediastorepv.data
 
 import android.net.Uri
-import android.os.Build
 import android.provider.MediaStore
-import androidx.annotation.RequiresApi
 
 enum class MediaType(val uri: Uri, val projection: Array<String>) {
     IMAGES(
