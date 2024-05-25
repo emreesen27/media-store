@@ -1,6 +1,6 @@
 package com.sn.mediastorepv.data
 
-import androisdd.provider.MediaStore
+import android.provider.MediaStore
 
 object OrderStrategy {
     const val DESC = "DESC"
